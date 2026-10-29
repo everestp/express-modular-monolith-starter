@@ -6,7 +6,12 @@ import { createApp } from '../../src/app.js';
 describe('starter app', () => {
   it('exposes health endpoints and version metadata', async () => {
     const app = createApp({
-      logger: { info: () => undefined, error: () => undefined, warn: () => undefined, child: () => ({ info: () => undefined, error: () => undefined, warn: () => undefined }) },
+      logger: {
+        info: () => undefined,
+        error: () => undefined,
+        warn: () => undefined,
+        child: () => ({ info: () => undefined, error: () => undefined, warn: () => undefined }),
+      },
       config: {
         nodeEnv: 'test',
         port: 3000,

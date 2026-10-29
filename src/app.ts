@@ -9,7 +9,16 @@ import { createLogger } from './core/logger/logger.js';
 import { createV1Router } from './versions/v1.js';
 
 export type AppDependencies = {
-  logger?: { info: (...args: unknown[]) => void; error: (...args: unknown[]) => void; warn: (...args: unknown[]) => void; child?: (bindings: Record<string, unknown>) => { info: (...args: unknown[]) => void; error: (...args: unknown[]) => void; warn: (...args: unknown[]) => void } };
+  logger?: {
+    info: (...args: unknown[]) => void;
+    error: (...args: unknown[]) => void;
+    warn: (...args: unknown[]) => void;
+    child?: (bindings: Record<string, unknown>) => {
+      info: (...args: unknown[]) => void;
+      error: (...args: unknown[]) => void;
+      warn: (...args: unknown[]) => void;
+    };
+  };
   config?: {
     nodeEnv?: string;
     port?: number;
@@ -67,7 +76,18 @@ export function createApp(deps: AppDependencies = {}) {
     });
   });
 
-  app.use('/api/v1', createV1Router({ logger }));
+  app.use(
+    '/api/v1',
+    createV1Router({
+      logger,
+      config: {
+        jwtSecret: deps.config?.jwtSecret ?? 'development-secret-change-me-please',
+        jwtIssuer: deps.config?.jwtIssuer ?? 'express-modular-monolith-starter',
+        jwtAudience: deps.config?.jwtAudience ?? 'starter-users',
+        accessTokenTtlMs: deps.config?.accessTokenTtlMs ?? 900_000,
+      },
+    }),
+  );
   app.use(notFoundHandler);
   app.use(errorHandler);
 
