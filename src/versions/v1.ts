@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
-import { createAuthModule } from '../modules/auth/index.js';
-import { createNotesModule } from '../modules/notes/index.js';
+import { InMemoryAuthRepository, createAuthModule } from '../modules/auth/index.js';
+import { InMemoryNotesRepository, createNotesModule } from '../modules/notes/index.js';
 import { createUsersModule } from '../modules/users/index.js';
 
 export function createV1Router(
@@ -21,13 +21,16 @@ export function createV1Router(
   const audience = deps.config?.jwtAudience ?? 'starter-users';
   const ttlMs = deps.config?.accessTokenTtlMs ?? 900_000;
 
+  const authRepository = new InMemoryAuthRepository();
+  const notesRepository = new InMemoryNotesRepository();
+
   router.get('/health', (_req, res) => {
     res.json({ ok: true, api: 'v1' });
   });
 
-  router.use('/auth', createAuthModule({ secret, issuer, audience, ttlMs }));
-  router.use('/users', createUsersModule({ secret, issuer, audience }));
-  router.use('/notes', createNotesModule({ secret, issuer, audience }));
+  router.use('/auth', createAuthModule({ secret, issuer, audience, ttlMs }, authRepository));
+  router.use('/users', createUsersModule({ secret, issuer, audience }, authRepository));
+  router.use('/notes', createNotesModule({ secret, issuer, audience }, notesRepository));
 
   return router;
 }
