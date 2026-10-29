@@ -1,0 +1,8 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Express Modular Monolith Starter",
+    "version": "0.1.0"
+  },
+  "paths": {}
+}
